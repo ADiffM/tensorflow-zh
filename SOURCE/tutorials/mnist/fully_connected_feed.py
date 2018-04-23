@@ -16,20 +16,20 @@ import tensorflow.python.platform
 import numpy
 import tensorflow as tf
 
-from tensorflow.g3doc.tutorials.mnist import input_data
-from tensorflow.g3doc.tutorials.mnist import mnist
+import input_data
+import mnist
 
 
 # Basic model parameters as external flags.
-flags = tf.app.flags
+flags = tf.app.flags   # tf.app.flags，用于支持接受命令行传递参数
 FLAGS = flags.FLAGS
 flags.DEFINE_float('learning_rate', 0.01, 'Initial learning rate.')
-flags.DEFINE_integer('max_steps', 2000, 'Number of steps to run trainer.')
+flags.DEFINE_integer('max_steps', 20000, 'Number of steps to run trainer.')
 flags.DEFINE_integer('hidden1', 128, 'Number of units in hidden layer 1.')
 flags.DEFINE_integer('hidden2', 32, 'Number of units in hidden layer 2.')
 flags.DEFINE_integer('batch_size', 100, 'Batch size.  '
                      'Must divide evenly into the dataset sizes.')
-flags.DEFINE_string('train_dir', 'data', 'Directory to put the training data.')
+flags.DEFINE_string('train_dir', './data/', 'Directory to put the training data.')
 flags.DEFINE_boolean('fake_data', False, 'If true, uses fake data '
                      'for unit testing.')
 
@@ -103,7 +103,7 @@ def do_eval(sess,
   true_count = 0  # Counts the number of correct predictions.
   steps_per_epoch = int(data_set.num_examples / FLAGS.batch_size)
   num_examples = steps_per_epoch * FLAGS.batch_size
-  for step in xrange(steps_per_epoch):
+  for step in range(steps_per_epoch):
     feed_dict = fill_feed_dict(data_set,
                                images_placeholder,
                                labels_placeholder)
@@ -140,7 +140,7 @@ def run_training():
     eval_correct = mnist.evaluation(logits, labels_placeholder)
 
     # Build the summary operation based on the TF collection of Summaries.
-    summary_op = tf.merge_all_summaries()
+    summary_op = tf.summary.merge_all()
 
     # Create a saver for writing training checkpoints.
     saver = tf.train.Saver()
@@ -153,11 +153,11 @@ def run_training():
     sess.run(init)
 
     # Instantiate a SummaryWriter to output summaries and the Graph.
-    summary_writer = tf.train.SummaryWriter(FLAGS.train_dir,
+    summary_writer = tf.summary.FileWriter(FLAGS.train_dir,
                                             graph_def=sess.graph_def)
 
     # And then after everything is built, start the training loop.
-    for step in xrange(FLAGS.max_steps):
+    for step in range(FLAGS.max_steps):
       start_time = time.time()
 
       # Fill a feed dictionary with the actual set of images and labels

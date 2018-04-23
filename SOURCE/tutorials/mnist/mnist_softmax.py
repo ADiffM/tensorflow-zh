@@ -6,7 +6,7 @@ from __future__ import print_function
 
 # Import data
 import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+mnist = input_data.read_data_sets("./data/", one_hot=True)
 
 import tensorflow as tf
 sess = tf.InteractiveSession()
@@ -16,17 +16,17 @@ x = tf.placeholder("float", [None, 784])
 W = tf.Variable(tf.zeros([784,10]))
 b = tf.Variable(tf.zeros([10]))
 #y = tf.nn.softmax(tf.matmul(x,W) + b)  # this will be lead an error because of log(0)
-y = tf.nn.log_softmax(tf.matmul(x,W) + b)
+y = tf.nn.log_softmax(tf.matmul(x, W) + b)
 
 # Define loss and optimizer
-y_ = tf.placeholder("float", [None,10])
-#cross_entropy = -tf.reduce_sum(y_*tf.log(y))
-cross_entropy = -tf.reduce_sum(y_*y)
-train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
+y_ = tf.placeholder("float", [None, 10])
+# cross_entropy = -tf.reduce_sum(y_*tf.log(y))
+cross_entropy = -tf.reduce_sum(y_*y)    # 两种计算损失的方式，现用第二种
+train_step = tf.train.GradientDescentOptimizer(0.001).minimize(cross_entropy)
 
 # Train
 tf.initialize_all_variables().run()
-for i in range(1000):
+for i in range(10000):
   batch_xs, batch_ys = mnist.train.next_batch(100)
   train_step.run({x: batch_xs, y_: batch_ys})
 
